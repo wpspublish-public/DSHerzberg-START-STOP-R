@@ -1,0 +1,49 @@
+---
+title: "Start/stop rules in R"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<br>
+
+#### Why do we want highest `streak_1 >= x`, and not highest `streak_1 = x`?
+
+To rephrase, we are looking for all `streak_1` of length _x_ or greater, not only `streak_1` whose length is exactly _x_. To see why, consider cases `A` and `B` below.
+
+```{r tall_cases, eval=FALSE}
+ item      A     B
+ i01       1     1
+ i02       1     1
+ i03       0     0
+ i04       1     1
+ i05       1     1
+ i06       1     1
+ i07       1     1
+ i08       0     0
+ i09       0     0
+ i10       1     1
+ i11       0     0
+ i12       1     1
+ i13       0     1
+ i14       0     1
+ i15       1     1
+ i16       1     1
+ i17       1     1
+ i18       1     1
+ i19       0     0
+ i20       1     1
+```
+Both cases have first `streak_1` of length 4. The difference between the two is that `A` has a high `streak_1` of 4, beginning at `i15`, whereas `B` has a high `streak_1` of 7, beginning at `i12`. The importance of these high `streak_1` is that they determine where we set the start item for each case.
+
+Intuitively, we can see that `B` represents higher ability, simply because it yields a higher raw score on the test. And, start items are set higher in the test as a function of increasing ability.
+
+Now, imagine that we set start item by looking for the highest `streak_1` whose length is exactly _x_. For `A`, that `streak_1` begins at `i15` (as noted above). But for `B`, that `streak_1` begins at `i04`.
+
+This is because our search rule (streak_length of exactly _x_) specifies that we must ignore the streak of 1s that begins at `i12`, becaues its length is not exactly _x_. This is counterintuitive, because even though its overall length is longer than _x_, it contains several streaks whose length is exactly _x_.
+
+A further counterintuitive result of the exactly _x_ search rule is that it causes the start item of `B` to be set lower than that of `A`. This is counterintuitive because we already agreed that `B` has higher ability than `A`, and therefore should have a higher start item than `A`.
+
+These problems are solved by finding the highest `streak_1 >=x`. This search rule catches `B`'s `streak_1` of length 7 that begins at `i12`, because that streak contains a `streak_1` of length 4. Thus, the start item will be set within that high streak, as is appropriate for `B`'s ability.
