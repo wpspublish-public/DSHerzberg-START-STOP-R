@@ -193,10 +193,219 @@ $(document).ready(function () {
 </div>
 
 
+<div id="definitions" class="section level2">
+<h2>Definitions</h2>
+<div id="concepts" class="section level3">
+<h3>Concepts</h3>
+<div id="basal-and-ceiling-streaks" class="section level5">
+<h5>Basal and ceiling streaks:</h5>
+<ul>
+<li>The <em>basal</em> and <em>ceiling</em> concepts are best seen as abstractions, not as concrete rules guiding test administration. The basal and ceiling concepts are defined under the umbrella of supporting more efficient test administration, but they do not themselves constitute test administration rules that can be applied in practice.</li>
+<li><strong>Basal streak</strong> refers to a streak of consecutive correct responses of length <em>x</em> or greater that defines a test-specific corollary to a child’s ability level. The basal streak indexes the child’s ability, such that it can be assumed that the child would succeed on all items less difficult than those in the streak. Actual incorrect responses below the basal streak are thereby supposed to be caused by random error, not by the child’s ability.</li>
+<li>On a lengthy test, a child may have more than one basal streak. We care about the highest of these streaks (the one comprising the most difficult items), because the highest streak allows us to ignore the greatest number of actual incorrect responses below the streak, thus facilitating more efficient test administration.</li>
+<li><strong>Ceiling streak</strong> refers to a streak of consecutive incorrect responses of length y or greater that defines a test-specific corollary to a child’s ability level. The ceiling streak indexes the child’s ability in such a way that all items more difficult than those in the streak can be considered incorrect. Actual correct responses above the ceiling streak are thereby supposed to be caused by random error, not by the child’s ability.</li>
+<li>On a lengthy test, a child may have more than one ceiling streak. We care about the lowest of these streaks (the one comprising the least difficult items), because the lowest streak allows us to ignore the greatest number of actual correct responses above the streak, thus facilitating more efficient test administration.</li>
+</ul>
+</div>
+<div id="start-and-stop-rules" class="section level4">
+<h4>Start and stop rules:</h4>
+<ul>
+<li>In contrast to basal/ceiling streaks, start and stop rules are actually used to guide test administration.</li>
+<li>Start rule: The start rule is applied by beginning the administration at an item (the start item) that represents typical development for children of the same age as the child being assessed. This allows the examiner to skip easier items, thus shortening administration time. This method operates on the assumption that these easier items would have been scored correct had they been administered.</li>
+<li>The start rule, which requires a certain number of consecutive correct responses working upward from the start item. When this rule is satisfied, the examiner can continue administering more difficult items, and proceed with assigning correct scores to all items below the start item. If the examiner encounters an incorrect response before the start rule is satisfied, he or she then administers items downward from the start item until achieving a streak of consecutive correct responses that satisfies the rule.</li>
+<li>The start rule is based on the basal streak of length x, and generally has a length of x+1. By looking at the distribution of basal streaks, we can select a start rule of x + 1 that, when applied, will prompt downward testing for 90-95% of the cases. That is because a start rule of x+1, no matter what is the start item, will always catch the next incorrect above a streak of x correct.</li>
+<li>Stop rule: the stop rule operates on the assumption that testing can be discontinued after a certain number of consecutive incorrect responses, because all items more difficult than the last incorrect item in that streak would have been scored incorrect, had they been administered. Applying the stop rule permits the examiner to skip more difficult items, further reducing administration time.</li>
+<li>The stop rule is based on the ceiling streak of length y, and generally has a length of y+1. By looking at the distribution of basal streaks, we can select a start rule of x + 1 that, when applied, will prompt downward testing for 90-95% of the cases. That is because a start rule of x+1, no matter what is the start item, will always catch the next incorrect above a streak of x correct.</li>
+<li>Practical issues
+<ul>
+<li>If possible, start rule length = stop rule length</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="terms" class="section level3">
+<h3>Terms</h3>
+<ul>
+<li><code>streak_1</code>: streak of consecutive <em>correct</em> responses<br />
+</li>
+<li><code>streak_0</code>: streak of consecutive <em>incorrect</em> responses<br />
+</li>
+<li><code>streak_length</code>: length of a streak of consecutive identical responses<br />
+</li>
+<li><code>low</code>: <em>less</em> difficult, closer to the beginning of the test<br />
+</li>
+<li><code>high</code>: <em>more</em> difficult, closer to the end of the test</li>
+<li><code>downward (backward) testing</code>: administering items in reverse order</li>
+</ul>
+</div>
+<div id="start-items-and-start-rules-are-developed-concurrently" class="section level3">
+<h3>Start items and start rules are developed concurrently</h3>
+<p>Age-based start items and start rules function together to shorten administration time while ensuring that examinees are admininstered an appropriate item set.</p>
+<p>Age-based start items allow the examiner to skip items that are too easy for the person being tested, thus shortening administration time. At the same time, the start rule forces backward testing for a subset of children, enabling the administration of easier items when they are needed for accurate measurement.</p>
+<p>Start items and start rules work in concert. For example, a test might start children of age five on item 20, under the broad assumption that all items below item 20 are too easy for most five-year-olds.</p>
+<p>The start rule functions as the “safety valve” to catch children for whom this broad assumption is not true. The rule works by specifying the minimum number of consecutive correct responses, beginning from the start item, needed to continue with upward testing. If an incorrect rerponse is encountered before the start rule is satisfied, the examiner goes back to the item immediately preceding the start item, and begins testing downward. Upward testing does not resume until the examinee produces a string of consecutive correct responses that satisifies the start rule.</p>
+<p>A well-designed start rule should force downward testing for about 90% of children who need to take easier items. This downward testing allows admininstration of easier items that would otherwise be skipped because of the age-based start item. The responses to these easier items, some of which may be incorrect, enable the test score to capture the child’s deficits.</p>
+<p>In this way, age-based start items are “prior” to the start rule, both conceptually and in terms of their position in the test administration procedures. However, in the concurrent analytic process used to develop start items and start rules, the start rule is addressed first.</p>
+</div>
+<div id="setting-up-the-analysis" class="section level3">
+<h3>Setting up the analysis</h3>
+<div id="load-packages" class="section level4">
+<h4>Load packages</h4>
+<div id="valid-code-to-run" class="section level6">
+<h6>VALID CODE TO RUN</h6>
+<pre class="r"><code>suppressMessages(library(here))
+library(magrittr)
+suppressMessages(suppressWarnings(library(tidyverse)))
+library(runner)
+suppressMessages(library(data.table))</code></pre>
+</div>
+</div>
+<div id="read-input-data-and-parameters" class="section level4">
+<h4>Read input data and parameters</h4>
+<p>The input file should be a large normative sample with adequate representation across age strata. The analyses proceed, except where noted, on a per-case basis (e.g., identifying the first incorrect response for each case, and so on.)</p>
+<p>This code snippet initializes vectors containing key input parameters. It then reads the input file with <code>readr::read_csv()</code> (wrapped in <code>base::suppressMessages()</code> to minimize console chatter). <code>here::here()</code> anchors the file path in the R project folder.</p>
+<p>Here and throughout, certain token markers are employed to designate user-input values that vary by project:</p>
+<ul>
+<li><code>{TOKEN}</code>: any value or series of values<br />
+</li>
+<li><code>{FILE-PATH}</code><br />
+</li>
+<li><code>{FILE-NAME-SUFFIX.csv}</code></li>
+</ul>
+<div id="valid-code-to-run-1" class="section level6">
+<h6>VALID CODE TO RUN</h6>
+<pre class="r"><code>scale &lt;- c('{TOKEN}')
+last_item &lt;- {TOKEN}
+first_item_orig_name &lt;- c('{TOKEN}')
+last_item_orig_name &lt;- c('{TOKEN}')
+
+input_orig_names &lt;- suppressMessages(
+  read_csv(
+    here(
+      paste0('{FILE-PATH}', scale, '{FILE-NAME-SUFFIX.csv}')
+    )
+  )
+) </code></pre>
+</div>
+</div>
+<div id="gather-input-data-to-express-columns-as-rows" class="section level4">
+<h4>Gather input data to express columns as rows</h4>
+<p>The structure of the input file is a row for each case, and a column for each item. Downstream code requires a multi-level (nested) structure with three columns: person, item, response. Within each person, nested rows contain key-value pairs of item-response. Thus each person has the same number of rows as the number of items. Within each set of person-rows, the left-right sequence of columns (item names) in the input file is represented in the <code>item</code> column, going down the rows. In the <code>response</code> column, the response for each item appears in the same row as the item name.</p>
+<p>Here’s an example of the table structure after this transformation, for three cases of a four-item test:</p>
+<table>
+<thead>
+<tr class="header">
+<th>ID</th>
+<th>Item</th>
+<th>Response</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1001</td>
+<td>i01</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>1001</td>
+<td>i02</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>1001</td>
+<td>i03</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>1001</td>
+<td>i04</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>1002</td>
+<td>i01</td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>1002</td>
+<td>i02</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>1002</td>
+<td>i03</td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>1002</td>
+<td>i04</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>1003</td>
+<td>i01</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>1003</td>
+<td>i02</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>1003</td>
+<td>i03</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>1003</td>
+<td>i04</td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+<div id="valid-code-to-run-2" class="section level6">
+<h6>VALID CODE TO RUN</h6>
+<pre class="r"><code>input &lt;- input_orig_names
+names(input) &lt;- c(names(input)[1:2], c(paste0('i', sprintf(&quot;%02d&quot;, 1:last_item))))
+
+input_ID_raw_score &lt;- input %&gt;%   
+  mutate(
+  TOT_raw = rowSums(.[3:last_item+2])
+) %&gt;% 
+  mutate(agestrat = case_when(
+    age_in_months &lt;= 23 ~ &quot;0-0 to 1-11&quot;,
+    inrange(age_in_months, 24, 47, incbounds=TRUE) ~ &quot;2-0 to 3-11&quot;,
+    inrange(age_in_months, 48, 71, incbounds=TRUE) ~ &quot;4-0 to 5-11&quot;,
+    inrange(age_in_months, 72, 258, incbounds=TRUE) ~ &quot;6-0+&quot;,
+    TRUE ~ NA_character_
+  )
+  ) %&gt;% 
+  select(IDnum, age_in_months, agestrat, TOT_raw) %&gt;% 
+  arrange(IDnum)
+
+input_gathered &lt;- input %&gt;%
+  gather(col, val, i01:!!as.name(paste0('i', last_item))) %&gt;% 
+  group_by(IDnum) %&gt;%
+  arrange(IDnum) %&gt;%
+  select(-age_in_months) %&gt;% 
+  mutate(col_num = row_number() + 2) </code></pre>
+</div>
+<div id="commented-code-chunks" class="section level6">
+<h6>COMMENTED CODE CHUNKS</h6>
+<p>Rename the items to a sequential numbering scheme. First, we create a copy of the input data file and assign it to <code>input</code>. Using <code>names()</code>, we then apply new column names to <code>input</code>, collecting the new names in a character vector <code>c()</code>. The two left-most columns retain their original names via <code>names(input)[1:2]</code>, and the remaining columns are named by the elements in the enclosed character vector <code>c(paste0('i', sprintf(&quot;%02d&quot;, 1:last_item)))</code>. These names are in sequential numbering format i01, i02, i03, etc. <code>base::sprintf()</code> is a string function that allows creation of sequences with leading 0s, e.g., ‘01, 02, 03’. <code>%02d</code> instructs R to format the sequence with 2 digits, left padding it with zeroes as needed.</p>
+<pre class="r"><code>input &lt;- input_orig_names
+names(input) &lt;- c(names(input)[1:2], c(paste0('i', sprintf(&quot;%02d&quot;, 1:last_item))))</code></pre>
 <p><br></p>
-<div id="why-do-we-want-highest-streak_1-x-and-not-highest-streak_1-x" class="section level4">
-<h4>Why do we want highest <code>streak_1 &gt;= x</code>, and not highest <code>streak_1 = x</code>?</h4>
-<p>To rephrase, we are looking for all <code>streak_1</code> of length <em>x</em> or greater, not only <code>streak_1</code> whose length is exactly <em>x</em>. To see why, consider cases <code>A</code> and <code>B</code> below.</p>
+</div>
+</div>
+</div>
+<div id="finding-the-lowest-incorrect-and-the-streak_1-above-it" class="section level3">
+<h3>Finding the lowest incorrect and the <code>streak_1</code> above it</h3>
+<p><br></p>
+</div>
+<div id="why-target-highest-streak_1-x-and-not-highest-streak_1-x" class="section level3">
+<h3>Why target highest <code>streak_1 &gt;= x</code>, and not highest <code>streak_1 = x</code>?</h3>
+<p>To rephrase, we target <code>streak_1</code>s of length <em>x</em> or greater, not limiting the search only to <code>streak_1</code> whose length is exactly <em>x</em>. To see why, consider cases <code>A</code> and <code>B</code> below.</p>
 <pre class="r"><code> item      A     B
  i01       1     1
  i02       1     1
@@ -218,12 +427,13 @@ $(document).ready(function () {
  i18       1     1
  i19       0     0
  i20       1     1</code></pre>
-<p>Both cases have first <code>streak_1</code> of length 4. The difference between the two is that <code>A</code> has a high <code>streak_1</code> of 4, beginning at <code>i15</code>, whereas <code>B</code> has a high <code>streak_1</code> of 7, beginning at <code>i12</code>. The importance of these high <code>streak_1</code> is that they determine where we set the start item for each case.</p>
-<p>Intuitively, we can see that <code>B</code> represents higher ability, simply because it yields a higher raw score on the test. And, start items are set higher in the test as a function of increasing ability.</p>
-<p>Now, imagine that we set start item by looking for the highest <code>streak_1</code> whose length is exactly <em>x</em>. For <code>A</code>, that <code>streak_1</code> begins at <code>i15</code> (as noted above). But for <code>B</code>, that <code>streak_1</code> begins at <code>i04</code>.</p>
-<p>This is because our search rule (streak_length of exactly <em>x</em>) specifies that we must ignore the streak of 1s that begins at <code>i12</code>, becaues its length is not exactly <em>x</em>. This is counterintuitive, because even though its overall length is longer than <em>x</em>, it contains several streaks whose length is exactly <em>x</em>.</p>
-<p>A further counterintuitive result of the exactly <em>x</em> search rule is that it causes the start item of <code>B</code> to be set lower than that of <code>A</code>. This is counterintuitive because we already agreed that <code>B</code> has higher ability than <code>A</code>, and therefore should have a higher start item than <code>A</code>.</p>
-<p>These problems are solved by finding the highest <code>streak_1 &gt;=x</code>. This search rule catches <code>B</code>’s</p>
+<p>Both cases have low <code>streak_1</code> of length 4. They differ in that <code>A</code> has a high <code>streak_1</code> of 4, beginning at <code>i15</code>, whereas <code>B</code> has a high <code>streak_1</code> of 7, beginning at <code>i12</code>. The importance of these high <code>streak_1</code> is that they determine where we set the start item for each case.</p>
+<p>Intuitively, we can see that <code>B</code> represents higher ability, simply because it yields a higher raw score. And, start items are set higher in the test as a function of increasing ability.</p>
+<p>Now, imagine that we set the start item by looking for the highest <code>streak_1</code> whose length is exactly <em>x</em>. For <code>A</code>, that <code>streak_1</code> begins at <code>i15</code> (as noted above). But for <code>B</code>, that <code>streak_1</code> begins at <code>i04</code>.</p>
+<p>This is because our search rule (<code>streak_length</code> of exactly <em>x</em>) specifies that we must ignore the <code>streak_1</code> that begins at <code>i12</code>, becaues its length is not exactly <em>x</em>. This is counterintuitive, because even though its overall length is longer than <em>x</em>, it contains several streaks whose length <em>is</em> exactly <em>x</em>.</p>
+<p>Targeting highest <code>streak_1 = x</code> yields a further counterintuitive result: it causes the start item of <code>B</code> to be set lower than that of <code>A</code>. This doesn’t make sense, because <code>B</code> has higher ability than <code>A</code>, and therefore should have a higher start item than <code>A</code>.</p>
+<p>These problems are solved by targeting the highest <code>streak_1 &gt;=x</code>. This search rule catches <code>B</code>’s <code>streak_1</code> of length 7 that begins at <code>i12</code>, because that streak contains a <code>streak_1</code> of length 4. Thus, the start item will be set within that high streak, as is appropriate for <code>B</code>’s higher ability.</p>
+</div>
 </div>
 
 

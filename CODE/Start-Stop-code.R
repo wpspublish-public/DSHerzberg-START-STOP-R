@@ -4,7 +4,6 @@ suppressMessages(suppressWarnings(library(tidyverse)))
 library(runner)
 suppressMessages(library(data.table))
 
-# Initialize input parameters and read input file
 scale <- c("PHY")
 last_item <- 37
 first_item_orig_name <- c("PHY06")
@@ -13,18 +12,12 @@ last_item_orig_name <- c("PHY48")
 input_orig_names <- suppressMessages(
   read_csv(
     here(
-      paste0('INPUT-FILES/SCORED-ITEMS/DP4-', scale, '-interview-scored-items.csv')
+      paste0('INPUT-FILES/DP4-', scale, '-interview-scored-items.csv')
     )
   )
 ) 
 
 ####### FIRST SECTION OF CODE DEALS WITH START RULE / BASAL
-
-# represent input item names as rows in a df. Thus, `df_names` provides key for
-# matching input item names to sequential item numbering, the latter being
-# represented in the df_names$value col. The single bracket [] is an extraction
-# of only the columns that are actual items (e.g., not IDnum, age, etc.)
-df_names <- enframe(names(input_orig_names)[3:last_item+2])
 
 # rename items to sequential numbering, `names(input)[1:2]` extracts first two
 # var names, which don't change; `sprintf()` is a string function that allows
@@ -51,7 +44,7 @@ input_ID_raw_score <- input %>%
 
 # For downstream code, we need a gathered table in which columns of the original
 # input are transformed into rows in the gathered table.
-input_tidy <- input %>%
+input_gathered <- input %>%
   # gather columns to express each cell as a key-value pair: col_name-cell_value
   gather(col, val, i01:!!as.name(paste0('i', last_item))) %>% 
   # group by IDnum, this allows a set of rows in the gathered table to be
@@ -75,7 +68,7 @@ input_tidy <- input %>%
 output_basal <- input[,1] %>% 
   # Combine these IDnums with summary of each IDnum's first zero, filter reduces the
   # table so that it contains only the 0 cells from the original input rows
-  left_join(input_tidy %>% filter(val == 0) %>%
+  left_join(input_gathered %>% filter(val == 0) %>%
               # In the input object there are multiple 0 rows per IDnum, and going
               # down the table they are arranged in ascending order of item
               # numbers going from left-to-right in the original input table.
@@ -93,7 +86,7 @@ output_basal <- input[,1] %>%
   # cases x items. The input object is grouped by IDnum, and within each group
   # of rows, the ascending, left-to-right item order of the origin table is
   # represented descending (going down the rows) of the piped table
-  left_join(input_tidy %>%
+  left_join(input_gathered %>%
               # this filter pares rows out of each IDnum group, such that, for each
               # IDnum, the remaining rows begin with the row that holds the first 1
               # score after the first 0 score, and end with the row that holds
@@ -141,7 +134,7 @@ streak_1_length <- 4
 # must get a win streak of streak_1_length + 1 in order to continue testing
 # forward). Why is the start rule "+1"? Because the rule has stay active all the
 # way through this streak_1_length, so that it can catch the 0 above the streak.
-start_data <- input_tidy %>%
+start_data <- input_gathered %>%
   # group_by(IDnum) allows you to find start item per case
   group_by(IDnum) %>% 
   # From the tidy input, label rows that contain correct responses (val = 1) and
@@ -237,7 +230,7 @@ print(hist_plot)
 ####### SECOND SECTION OF CODE DEALS WITH STOP RULE / CEILING
 
 # Replicate tidy input with original item names.
-input_tidy_orig_names <- input_orig_names %>%
+input_gathered_orig_names <- input_orig_names %>%
   # gather columns to express each cell as a key-value pair: col_name-cell_value
   gather(col, val, first_item_orig_name:last_item_orig_name) %>% 
   # group by IDnum, this allows a set of rows in the gathered table to be
@@ -256,7 +249,7 @@ input_tidy_orig_names <- input_orig_names %>%
 # The purpose of the next snippet is to get the length of streak of Os below the
 # last (highest) 1 response for each case.
 output_ceiling <- input_orig_names[,1] %>% 
-  left_join(input_tidy_orig_names) %>% 
+  left_join(input_gathered_orig_names) %>% 
   group_by(IDnum) %>%
   arrange(IDnum) %>%
   # Pare table to only rows containing 1 item responses
@@ -307,7 +300,7 @@ streak_0_length <- 4
 # start rule streak for each case, and recode all 0s below this streak to 1, and
 # to find the lowest stop rule streak and recode all 1s above this streak to O.
 # The code accomplishes this dual-recoding in a single pass.
-rescore_data <- input_tidy %>%
+rescore_data <- input_gathered %>%
   # group_by(IDnum) allows you to find streaks indepently within each case.
   group_by(IDnum) %>% 
   # From the tidy input, label rows that contain correct responses (val = 1) and
