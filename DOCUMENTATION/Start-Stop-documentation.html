@@ -395,8 +395,17 @@ input_gathered &lt;- input %&gt;%
 <p>Rename the items to a sequential numbering scheme. First, we create a copy of the input data file and assign it to <code>input</code>. Using <code>names()</code>, we then apply new column names to <code>input</code>, collecting the new names in a character vector <code>c()</code>. The two left-most columns retain their original names via <code>names(input)[1:2]</code>, and the remaining columns are named by the elements in the enclosed character vector <code>c(paste0('i', sprintf(&quot;%02d&quot;, 1:last_item)))</code>. These names are in sequential numbering format i01, i02, i03, etc. <code>base::sprintf()</code> is a string function that allows creation of sequences with leading 0s, e.g., ‘01, 02, 03’. <code>%02d</code> instructs R to format the sequence with 2 digits, left padding it with zeroes as needed.</p>
 <pre class="r"><code>input &lt;- input_orig_names
 names(input) &lt;- c(names(input)[1:2], c(paste0('i', sprintf(&quot;%02d&quot;, 1:last_item))))</code></pre>
-<p><br></p>
+<p>This is a brief detour from the main workflow to create a table that is later used to define the stop rule. We first use <code>dplyr::mutate()</code> to add a column to the <code>input</code> file created in the last snippet, the one with the sequentially numbered items. The new column <code>TOT_raw</code> is the raw score per case, obtained by summing the item scores with <code>base::rowSums()</code>. The columns to be summed are capture by the expression <code>(.[3:last_item+2])</code>.</p>
+<p>The <code>.</code> shorthand is a reference to the data object flowing through the pipeline. This object is subsetted <code>[]</code> by column position, starting at the 3rd position and ending at the column position corresponding to the last item number <code>last_item</code> plus 2 positions. These column positions are offset by two because the first two columns in the input object contain ID and age variables, which are not included in <code>TOT_raw</code>.</p>
 </div>
+</div>
+<div id="need-to-tokenize-position-3-in-last-snippet" class="section level4">
+<h4>Need to tokenize position 3 in last snippet</h4>
+<pre class="r"><code>input_ID_raw_score &lt;- input %&gt;%   
+  mutate(
+  TOT_raw = rowSums(.[3:last_item+2])
+) %&gt;% </code></pre>
+<p><br></p>
 </div>
 </div>
 <div id="finding-the-lowest-incorrect-and-the-streak_1-above-it" class="section level3">
